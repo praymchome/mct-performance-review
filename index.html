@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCT Staff Performance Review</title>
+    
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #E8F0FE 0%, #FFF5E6 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 56, 188, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0038BC 0%, #0052E0 100%);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(239, 143, 0, 0.1);
+            border-radius: 50%;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+            background: white;
+            padding: 10px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .view-only-banner {
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFECC7 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid #EF8F00;
+            display: none;
+        }
+
+        .view-only-banner h2 {
+            color: #EF8F00;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .view-only-banner p {
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .message {
+            padding: 18px 30px;
+            margin: 30px 40px;
+            border-radius: 12px;
+            display: none;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%);
+            border-left: 4px solid #28A745;
+            color: #155724;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #F8D7DA 0%, #F5C6CB 100%);
+            border-left: 4px solid #DC3545;
+            color: #721C24;
+        }
+
+        .message.loading {
+            background: linear-gradient(135deg, #D1ECF1 0%, #BEE5EB 100%);
+            border-left: 4px solid #17A2B8;
+            color: #0C5460;
+        }
+
+        .form-content {
+            padding: 50px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #0038BC 0%, #0052E0 100%);
+            color: white;
+            padding: 16px 30px;
+            font-size: 17px;
+            font-weight: 600;
+            margin: 40px -50px 30px -50px;
+            box-shadow: 0 4px 12px rgba(0, 56, 188, 0.15);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: #EF8F00;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2D3748;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #EF8F00;
+            font-weight: 700;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #F7FAFC;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0038BC;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 56, 188, 0.1);
+        }
+
+        input:disabled,
+        select:disabled,
+        textarea:disabled {
+            background: #E2E8F0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .rating-group {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1.2fr;
+            gap: 25px;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 20px;
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+            border-radius: 12px;
+            border-left: 4px solid #0038BC;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .rating-group:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 56, 188, 0.08);
+        }
+
+        .rating-label {
+            font-size: 14px;
+            color: #2D3748;
+            font-weight: 500;
+        }
+
+        .rating-column {
+            position: relative;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .rating-column.employee-section {
+            border-top: 3px solid #0038BC;
+        }
+
+        .rating-column.supervisor-section {
+            border-top: 3px solid #EF8F00;
+            position: relative;
+        }
+
+        .rating-column.supervisor-section::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 80%;
+            background: linear-gradient(180deg, #EF8F00 0%, #FFA726 100%);
+            border-radius: 4px;
+        }
+
+        .radio-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .radio-options label {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: #F7FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4A5568;
+            margin: 0;
+        }
+
+        .employee-section .radio-options label:hover {
+            border-color: #0038BC;
+            background: #E8F0FE;
+        }
+
+        .supervisor-section .radio-options label:hover {
+            border-color: #EF8F00;
+            background: #FFF5E6;
+        }
+
+        .radio-options input[type="radio"] {
+            margin-right: 6px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .radio-options input[type="radio"]:disabled {
+            cursor: not-allowed;
+        }
+
+        .employee-section .radio-options input[type="radio"] {
+            accent-color: #0038BC;
+        }
+
+        .supervisor-section .radio-options input[type="radio"] {
+            accent-color: #EF8F00;
+        }
+
+        .employee-section .radio-options label:has(input:checked) {
+            border-color: #0038BC;
+            background: linear-gradient(135deg, #E8F0FE 0%, #D6E7FF 100%);
+            color: #0038BC;
+            box-shadow: 0 2px 6px rgba(0, 56, 188, 0.2);
+        }
+
+        .supervisor-section .radio-options label:has(input:checked) {
+            border-color: #EF8F00;
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFECC7 100%);
+            color: #EF8F00;
+            box-shadow: 0 2px 6px rgba(239, 143, 0, 0.2);
+        }
+
+        .rating-header {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .employee-section .rating-header {
+            color: #0038BC;
+        }
+
+        .supervisor-section .rating-header {
+            color: #EF8F00;
+        }
+
+        .rating-key {
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFECC7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            font-size: 14px;
+            line-height: 1.8;
+            border-left: 4px solid #EF8F00;
+            box-shadow: 0 4px 12px rgba(239, 143, 0, 0.1);
+        }
+
+        .rating-key strong {
+            color: #0038BC;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0038BC 0%, #0052E0 100%);
+            color: white;
+            padding: 16px 36px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 56, 188, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 56, 188, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #EF8F00 0%, #FFA726 100%);
+            box-shadow: 0 4px 12px rgba(239, 143, 0, 0.3);
+        }
+
+        .btn-orange:hover {
+            box-shadow: 0 8px 20px rgba(239, 143, 0, 0.4);
+        }
+
+        .btn-dark {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            box-shadow: 0 4px 12px rgba(45, 55, 72, 0.3);
+        }
+
+        .btn-dark:hover {
+            box-shadow: 0 8px 20px rgba(45, 55, 72, 0.4);
+        }
+
+        .note {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFF3CD 100%);
+            border-left: 4px solid #FFC107;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #856404;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+        }
+
+        .note strong {
+            color: #856404;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .form-content {
+                padding: 30px 25px;
+            }
+
+            .section-title {
+                margin-left: -25px;
+                margin-right: -25px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-group {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .rating-column {
+                padding: 12px;
+            }
+
+            .rating-column.supervisor-section::before {
+                display: none;
+            }
+
+            .radio-options {
+                flex-wrap: wrap;
+            }
+
+            .radio-options label {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            #linkSection {
+                padding: 20px;
+            }
+
+            #linkSection input {
+                font-size: 11px;
+            }
+
+            #linkSection button {
+                padding: 12px 16px;
+                font-size: 12px;
+            }
+
+            #linkSection > div > div {
+                flex-direction: column;
+            }
+
+            #linkSection button {
+                width: 100%;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F7FAFC;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0038BC 0%, #0052E0 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0038BC;
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="data:image/png;base64,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" alt="MCT Logo" class="logo">
+            <h1>MCT STAFF PERFORMANCE REVIEW</h1>
+            <p class="subtitle">Montessori Community of Tanzania</p>
+        </div>
+
+        <div class="view-only-banner" id="viewOnlyBanner">
+            <h2>📋 View-Only Mode</h2>
+            <p>This review is complete. You can view it and save as PDF below.</p>
+        </div>
+
+        <div class="message success" id="successMsg"></div>
+        <div class="message error" id="errorMsg"></div>
+        <div class="message loading" id="loadingMsg">Processing your request...</div>
+
+        <form id="reviewForm" class="form-content">
+            <div class="section">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="employeeName">Employee Name <span class="required">*</span></label>
+                        <input type="text" id="employeeName" name="employeeName" required placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeEmail">Employee Email <span class="required">*</span></label>
+                        <input type="email" id="employeeEmail" name="employeeEmail" required placeholder="Enter employee email">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="supervisorName">Supervisor Name <span class="required">*</span></label>
+                        <input type="text" id="supervisorName" name="supervisorName" required placeholder="Enter supervisor name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewDate">Review Date <span class="required">*</span></label>
+                        <input type="date" id="reviewDate" name="reviewDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="completingRole">I am completing this as: <span class="required">*</span></label>
+                    <select id="completingRole" name="completingRole" required onchange="updateButtonVisibility()">
+                        <option value="">-- Select Your Role --</option>
+                        <option value="employee">Employee (Self-Assessment)</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="director">Executive Director</option>
+                    </select>
+                </div>
+
+                <!-- Hidden fields for backend -->
+                <input type="hidden" id="reviewId" name="reviewId" value="">
+                <input type="hidden" id="supervisorEmail" name="supervisorEmail" value="">
+                <input type="hidden" id="directorEmail" name="directorEmail" value="">
+
+                <div class="note">
+                    <strong>📋 Note:</strong> Complete your section and the system will automatically email the next reviewer.
+                </div>
+            </div>
+
+            <div class="section-title">1. Overall Accomplishments</div>
+            
+            <div class="form-group">
+                <label for="accomplishments">1.0 What were your major accomplishments and/or significant activities over the past year, and how did they contribute to the overall Project goals?</label>
+                <textarea id="accomplishments" name="accomplishments" placeholder="Describe your key achievements..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="performance_evaluation">1.1 Please evaluate your performance in completing the above activities. Explain how you have participated in task teams. Give specifics of how you do your job that you wish to continue and what you would change to improve your performance.</label>
+                <textarea id="performance_evaluation" name="performance_evaluation" placeholder="Your self-evaluation..."></textarea>
+            </div>
+
+            <div class="rating-key">
+                <strong>📊 RATING KEY:</strong><br>
+                <strong>EE</strong> - Exceeds Expectations. Performance on this factor exceeds job responsibilities and is consistently superior.<br>
+                <strong>ME</strong> - Meets Expectations. Performance on this factor consistently meets all job responsibilities and is consistent with expectations for persons of similar experience.<br>
+                <strong>SE</strong> - Meets Some Expectations: Performance on this factor meets some of the full job responsibilities, yet there are some areas needing improvement.<br>
+                <strong>NE</strong> - Does Not Meet Expectations: Performance on this factor does not meet minimum job requirements and is below expectations.<br>
+                <strong>NA</strong> - This factor does not apply to the person's performance.
+            </div>
+
+            <div class="section-title">2. SPECIFIC Job Duties</div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.0 Possesses thorough knowledge of assigned tasks and how to accomplish them.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="job_knowledge_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="job_knowledge_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="job_knowledge_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="job_knowledge_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="job_knowledge_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="job_knowledge_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="job_knowledge_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="job_knowledge_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="job_knowledge_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="job_knowledge_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.1 Clearly communicates directions, thoughts and ideas.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="communication_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="communication_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="communication_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="communication_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="communication_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="communication_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="communication_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="communication_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="communication_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="communication_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.2 Is able to prioritize and follow through on priorities. Consistently meets scheduled deadlines.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="time_management_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="time_management_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="time_management_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="time_management_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="time_management_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="time_management_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="time_management_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="time_management_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="time_management_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="time_management_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.3 Is good at problem solving. Understands and considers all relevant issues.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="problem_solving_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="problem_solving_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="problem_solving_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="problem_solving_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="problem_solving_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="problem_solving_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="problem_solving_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="problem_solving_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="problem_solving_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="problem_solving_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.4 Strives to improve knowledge and skills related to job and responsibilities.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="professional_dev_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="professional_dev_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="professional_dev_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="professional_dev_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="professional_dev_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="professional_dev_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="professional_dev_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="professional_dev_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="professional_dev_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="professional_dev_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.5 Initiates and follows through with suggestions for improvement.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="initiative_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="initiative_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="initiative_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="initiative_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="initiative_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="initiative_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="initiative_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="initiative_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="initiative_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="initiative_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.6 Is proficient at written communication.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="written_comm_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="written_comm_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="written_comm_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="written_comm_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="written_comm_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="written_comm_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="written_comm_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="written_comm_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="written_comm_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="written_comm_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">2.7 Understands the projects' long-term and short-term goals</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="strategic_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="strategic_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="strategic_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="strategic_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="strategic_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="strategic_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="strategic_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="strategic_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="strategic_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="strategic_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="employee_comments_section2">Employee's Comments: on areas where you feel you have done very well and those areas where you feel that you will be working on to improve:</label>
+                <textarea id="employee_comments_section2" name="employee_comments_section2" placeholder="Additional comments..."></textarea>
+            </div>
+
+            <div class="section-title">3. Interpersonal skills & team work</div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.0 Handles Stress well.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="stress_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="stress_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="stress_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="stress_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="stress_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="stress_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="stress_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="stress_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="stress_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="stress_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.1 Assists overall project team in achieving program goals</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="team_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="team_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="team_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="team_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="team_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="team_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="team_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="team_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="team_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="team_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.2 Uses tact and diplomacy in difficult situations. Exercises good judgment. Exercises good judgment</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="diplomacy_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="diplomacy_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="diplomacy_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="diplomacy_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="diplomacy_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="diplomacy_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="diplomacy_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="diplomacy_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="diplomacy_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="diplomacy_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.3 Contributes positively to morale in the office..</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="morale_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="morale_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="morale_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="morale_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="morale_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="morale_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="morale_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="morale_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="morale_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="morale_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.4 Promotes a professional image of MCT</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="image_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="image_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="image_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="image_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="image_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="image_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="image_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="image_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="image_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="image_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.5 Appreciates and accepts suggestions and constructive criticism.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="criticism_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="criticism_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="criticism_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="criticism_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="criticism_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="criticism_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="criticism_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="criticism_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="criticism_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="criticism_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">3.6 Exercises good judgment and appropriate decision making regarding confidential matters</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="confidential_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="confidential_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="confidential_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="confidential_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="confidential_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="confidential_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="confidential_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="confidential_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="confidential_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="confidential_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">4. Supervisory Performance (Optional)</div>
+
+            <div class="rating-group">
+                <div class="rating-label">4.0 Provides training, support and recognition to all staff..</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="training_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="training_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="training_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="training_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="training_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="training_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="training_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="training_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="training_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="training_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">4.1 Manages with strong leadership..</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="leadership_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="leadership_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="leadership_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="leadership_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="leadership_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="leadership_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="leadership_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="leadership_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="leadership_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="leadership_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">4.2 Is available to others at reasonable and acceptable intervals.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="availability_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="availability_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="availability_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="availability_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="availability_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="availability_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="availability_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="availability_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="availability_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="availability_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <div class="rating-label">4.3 Understands the need for vision, long-term and short-term goals.</div>
+                <div class="rating-column employee-section">
+                    <div class="rating-header">Employee</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="vision_emp" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="vision_emp" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="vision_emp" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="vision_emp" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="vision_emp" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+                <div class="rating-column supervisor-section">
+                    <div class="rating-header">Supervisor</div>
+                    <div class="radio-options">
+                        <label><input type="radio" name="vision_sup" value="EE"> <span>EE</span></label>
+                        <label><input type="radio" name="vision_sup" value="ME"> <span>ME</span></label>
+                        <label><input type="radio" name="vision_sup" value="SE"> <span>SE</span></label>
+                        <label><input type="radio" name="vision_sup" value="NE"> <span>NE</span></label>
+                        <label><input type="radio" name="vision_sup" value="NA"> <span>NA</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="supervisor_comments">Comments:</label>
+                <textarea id="supervisor_comments" name="supervisor_comments" placeholder="Supervisor's feedback..."></textarea>
+            </div>
+
+            <div class="section-title">5. Epilog</div>
+
+            <div class="form-group">
+                <label for="strengths_improvements">5.0 Please highlight those areas where you feel you have done very well and those areas where you feel that you will be working on to improve.</label>
+                <textarea id="strengths_improvements" name="strengths_improvements" placeholder="Strengths and areas for improvement..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="future_activities">5.1 What major activities are you planning to undertake in the next year?</label>
+                <textarea id="future_activities" name="future_activities" placeholder="Future goals and activities..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="support_needed">5.2 What specific additional support or skills do you need in order to accomplish those activities?</label>
+                <textarea id="support_needed" name="support_needed" placeholder="Support needed..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="personal_growth">5.3 What other goals or desires do you have for professional or personal growth?</label>
+                <textarea id="personal_growth" name="personal_growth" placeholder="Growth goals..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="resources_help">5.4 What specific additional resources, support, or skills do you need in order to accomplish these goals? How can your supervisors or your peers help you in any performance improvement efforts you identified</label>
+                <textarea id="resources_help" name="resources_help" placeholder="Resources and support needed..."></textarea>
+            </div>
+
+            <div class="section-title">6. To be completed by the Supervisor</div>
+
+            <div class="form-group">
+                <label for="final_supervisor_comments">1. Any additional comments highlighting specific strengths and improvements needed. Address issues raised by the employee in the self-assessment portion if not already addressed.</label>
+                <textarea id="final_supervisor_comments" name="final_supervisor_comments" placeholder="Final supervisor feedback..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="employee_response">2. Employees comments: Employee can add any additional comments/response on the performance review if you so wish.</label>
+                <textarea id="employee_response" name="employee_response" placeholder="Your response to supervisor's comments..."></textarea>
+            </div>
+
+            <div class="section-title">Executive Director's Final Review</div>
+
+            <div class="form-group">
+                <label for="director_final_comments">Executive Director's Comments:</label>
+                <textarea id="director_final_comments" name="director_final_comments" placeholder="Executive Director's final review..."></textarea>
+            </div>
+
+            <div class="section-title">Signatures</div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="employee_signature">Employee's Signature:</label>
+                    <input type="text" id="employee_signature" name="employee_signature" placeholder="Type your name">
+                </div>
+                <div class="form-group">
+                    <label for="employee_signature_date">Date:</label>
+                    <input type="date" id="employee_signature_date" name="employee_signature_date">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="supervisor_signature">Supervisor's Signature:</label>
+                    <input type="text" id="supervisor_signature" name="supervisor_signature" placeholder="Type your name">
+                </div>
+                <div class="form-group">
+                    <label for="supervisor_signature_date">Date:</label>
+                    <input type="date" id="supervisor_signature_date" name="supervisor_signature_date">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="director_signature">Executive Director's Signature:</label>
+                    <input type="text" id="director_signature" name="director_signature" placeholder="Type your name">
+                </div>
+                <div class="form-group">
+                    <label for="director_signature_date">Date:</label>
+                    <input type="date" id="director_signature_date" name="director_signature_date">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-primary" id="employeeBtnSupervisor" onclick="saveAndSendToSupervisor()" style="display: none;">
+                    📤 Send to Supervisor
+                </button>
+                <button type="button" class="btn-primary btn-orange" id="employeeBtnDirector" onclick="saveAndSendToDirector()" style="display: none;">
+                    📤 Send to Executive Director
+                </button>
+                <button type="button" class="btn-primary btn-orange" id="supervisorBtn" onclick="saveAndSendToDirector()" style="display: none;">
+                    📤 Send to Executive Director
+                </button>
+                <button type="button" class="btn-primary btn-dark" id="directorBtn" onclick="generateViewOnlyLink()" style="display: none;">
+                    🔗 Generate View-Only Link
+                </button>
+            </div>
+
+            <!-- Link Display Section -->
+            <div id="linkSection" style="display: none; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #E8F0FE 0%, #D6E7FF 100%); border-radius: 16px; border: 3px solid #0038BC; box-shadow: 0 8px 24px rgba(0, 56, 188, 0.15);">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">🎉</div>
+                    <h3 style="color: #0038BC; font-size: 20px; margin-bottom: 10px; font-weight: 700;">Review Link Generated!</h3>
+                    <p id="linkInstruction" style="color: #2D3748; font-size: 14px; margin-bottom: 20px;">Email sent automatically to the next reviewer</p>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="text" id="generatedLink" readonly style="flex: 1; padding: 14px; border: 2px solid #0038BC; border-radius: 8px; font-family: monospace; font-size: 13px; background: #F7FAFC; color: #0038BC; font-weight: 600;">
+                        <button onclick="copyGeneratedLink()" style="padding: 14px 24px; background: linear-gradient(135deg, #0038BC 0%, #0052E0 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0, 56, 188, 0.3); transition: all 0.3s ease;">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <p style="color: #4A5568; font-size: 13px; line-height: 1.6;">
+                        💡 <strong>Tip:</strong> The next person will receive an email automatically.<br>
+                        You can also copy and share this link manually if needed.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Save as PDF Button -->
+            <div style="margin-top: 40px; text-align: center; padding: 30px; background: linear-gradient(135deg, #FFF5E6 0%, #FFECC7 100%); border-radius: 16px; border: 3px solid #EF8F00; box-shadow: 0 8px 24px rgba(239, 143, 0, 0.15);">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">📄</div>
+                    <h3 style="color: #EF8F00; font-size: 18px; margin-bottom: 8px; font-weight: 700;">Download Your Review</h3>
+                    <p style="color: #4A5568; font-size: 13px; margin-bottom: 20px;">Save a copy of this performance review as PDF</p>
+                </div>
+                <button onclick="generatePDF()" class="btn-primary btn-orange" style="padding: 16px 40px; font-size: 16px; display: inline-flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">💾</span>
+                    <span>Save as PDF</span>
+                </button>
+                <p style="color: #856404; font-size: 12px; margin-top: 15px; font-style: italic;">
+                    ⏱️ Note: PDF generation may take a few seconds
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBCyIu4UD1BAjdnnfCSpPD9K1myX153WsA",
+  authDomain: "mct-performance-review.firebaseapp.com",
+  projectId: "mct-performance-review",
+  storageBucket: "mct-performance-review.firebasestorage.app",
+  messagingSenderId: "161662386516",
+  appId: "1:161662386516:web:fecdb81e049fef6c5408c1"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const reviewId = urlParams.get('review');
+            const viewOnly = urlParams.get('view');
+            
+            if (viewOnly === 'true') {
+                enableViewOnlyMode();
+            }
+            
+            if (reviewId) {
+                loadExistingReview(reviewId);
+            }
+
+            setInterval(autoSave, 120000);
+        });
+
+        function enableViewOnlyMode() {
+            document.getElementById('viewOnlyBanner').style.display = 'block';
+            document.querySelectorAll('input, textarea, select, button').forEach(el => {
+                if (el.onclick && el.onclick.toString().includes('generatePDF')) {
+                    // Keep PDF button enabled
+                    return;
+                }
+                el.disabled = true;
+            });
+            document.querySelector('.button-group').style.display = 'none';
+            document.getElementById('linkSection').style.display = 'none';
+        }
+
+        function updateButtonVisibility() {
+            const role = document.getElementById('completingRole').value;
+            const employeeBtnSupervisor = document.getElementById('employeeBtnSupervisor');
+            const employeeBtnDirector = document.getElementById('employeeBtnDirector');
+            const supervisorBtn = document.getElementById('supervisorBtn');
+            const directorBtn = document.getElementById('directorBtn');
+
+            employeeBtnSupervisor.style.display = 'none';
+            employeeBtnDirector.style.display = 'none';
+            supervisorBtn.style.display = 'none';
+            directorBtn.style.display = 'none';
+
+            if (role === 'employee') {
+                employeeBtnSupervisor.style.display = 'inline-block';
+                employeeBtnDirector.style.display = 'inline-block';
+            } else if (role === 'supervisor') {
+                supervisorBtn.style.display = 'inline-block';
+            } else if (role === 'director') {
+                directorBtn.style.display = 'inline-block';
+            }
+        }
+
+        async function saveAndSendToSupervisor() {
+            if (!confirm('This will send your self-assessment to your Supervisor. Continue?')) {
+                return;
+            }
+            await saveDraft('supervisor');
+        }
+
+        async function saveAndSendToDirector() {
+            const role = document.getElementById('completingRole').value;
+            const message = role === 'employee' 
+                ? 'This will send your self-assessment directly to the Executive Director. Continue?'
+                : 'This will send your assessment to the Executive Director. Continue?';
+            
+            if (!confirm(message)) {
+                return;
+            }
+            await saveDraft('director');
+        }
+
+        async function generateViewOnlyLink() {
+            if (!confirm('This will finalize the review and send a view-only link to the Employee and Supervisor via email. Continue?')) {
+                return;
+            }
+            await saveDraft('complete');
+        }
+
+        async function saveDraft(nextStep) {
+            showMessage('loading', 'Saving your review...');
+
+            try {
+                const formData = new FormData(document.getElementById('reviewForm'));
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                if (!data.reviewId) {
+                    data.reviewId = 'MCT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    document.getElementById('reviewId').value = data.reviewId;
+                }
+
+                data.nextStep = nextStep;
+                data.timestamp = new Date().toISOString();
+                data.submitType = (nextStep === 'complete') ? 'FINAL' : 'DRAFT';
+                data.reviewStatus = nextStep === 'supervisor' ? 'awaiting_supervisor' 
+                                  : nextStep === 'director' ? 'awaiting_director' 
+                                  : 'complete';
+
+                localStorage.setItem('draft_' + data.reviewId, JSON.stringify(data));
+
+                await db.collection('reviews').doc(data.reviewId).set(data, { merge: true });
+
+                const currentUrl = window.location.origin + window.location.pathname;
+                const shareLink = currentUrl + '?review=' + data.reviewId;
+                const viewOnlyLink = currentUrl + '?review=' + data.reviewId + '&view=true';
+
+                if (nextStep === 'supervisor') {
+                    showLinkAtBottom(shareLink, 'Copy this link and share it with your Supervisor:');
+                    showMessage('success', '<strong>✓ Saved Successfully!</strong><br>Scroll down to copy the link and share it with your Supervisor.');
+                } else if (nextStep === 'director') {
+                    showLinkAtBottom(shareLink, 'Copy this link and share it with the Executive Director:');
+                    showMessage('success', '<strong>✓ Saved Successfully!</strong><br>Scroll down to copy the link and share it with the Executive Director.');
+                } else if (nextStep === 'complete') {
+                    showLinkAtBottom(viewOnlyLink, 'Copy this view-only link and share it with Employee & Supervisor:');
+                    showMessage('success', '<strong>✓ Review Complete!</strong><br><br>The performance review has been finalized.<br>Copy the view-only link below and share it with the Employee and Supervisor.');
+                }
+
+            } catch (error) {
+                console.error('Error saving:', error);
+                showMessage('error', '⚠️ Error saving review: ' + error.message);
+            }
+        }
+
+        async function loadExistingReview(reviewId) {
+            try {
+                showMessage('loading', 'Loading review...');
+
+                const doc = await db.collection('reviews').doc(reviewId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    populateForm(data);
+                    updateButtonVisibility();
+                    hideAllMessages();
+                } else {
+                    const savedData = localStorage.getItem('draft_' + reviewId);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        populateForm(data);
+                        updateButtonVisibility();
+                        hideAllMessages();
+                    } else {
+                        showMessage('error', 'Review not found.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading review:', error);
+                showMessage('error', 'Error loading review: ' + error.message);
+            }
+        }
+
+        function populateForm(data) {
+            Object.keys(data).forEach(key => {
+                const elements = document.getElementsByName(key);
+                if (elements.length > 0) {
+                    const element = elements[0];
+                    if (element.type === 'radio') {
+                        elements.forEach(radio => {
+                            if (radio.value === data[key]) {
+                                radio.checked = true;
+                            }
+                        });
+                    } else {
+                        element.value = data[key];
+                    }
+                }
+            });
+        }
+
+        function hideAllMessages() {
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('loadingMsg').style.display = 'none';
+        }
+
+        function generateNewReviewId() {
+            return 'MCT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function loadExistingReview(reviewId) {
+            const savedData = localStorage.getItem('draft_' + reviewId);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementsByName(key)[0];
+                    if (element) {
+                        if (element.type === 'radio') {
+                            if (element.value === data[key]) {
+                                element.checked = true;
+                            }
+                        } else {
+                            element.value = data[key];
+                        }
+                    }
+                });
+                updateButtonVisibility();
+            }
+        }
+
+        function autoSave() {
+            const reviewId = document.getElementsByName('reviewId')[0]?.value;
+            if (reviewId) {
+                const formData = new FormData(document.getElementById('reviewForm'));
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+                localStorage.setItem('draft_' + reviewId, JSON.stringify(data));
+            }
+        }
+
+        function showLinkAtBottom(link, instruction) {
+            const linkSection = document.getElementById('linkSection');
+            const linkInput = document.getElementById('generatedLink');
+            const linkInstruction = document.getElementById('linkInstruction');
+            
+            linkInput.value = link;
+            linkInstruction.textContent = instruction;
+            linkSection.style.display = 'block';
+            
+            setTimeout(() => {
+                linkSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        function copyGeneratedLink() {
+            const linkInput = document.getElementById('generatedLink');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Copied!';
+                btn.style.background = '#28A745';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'linear-gradient(135deg, #0038BC 0%, #0052E0 100%)';
+                }, 2000);
+            });
+        }
+
+        async function generatePDF() {
+            showMessage('loading', '📄 Generating PDF... Please wait (this may take 10-15 seconds)');
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const element = document.querySelector('.container');
+                
+                const buttonsToHide = document.querySelectorAll('.button-group, #linkSection, .message');
+                buttonsToHide.forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    windowWidth: 1200,
+                    onclone: function(clonedDoc) {
+                        const clonedElement = clonedDoc.querySelector('.container');
+                        if (clonedElement) {
+                            clonedElement.style.boxShadow = 'none';
+                        }
+                    }
+                });
+                
+                buttonsToHide.forEach(btn => {
+                    if (btn.id === 'linkSection') {
+                    } else {
+                        btn.style.display = '';
+                    }
+                });
+                
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const pdf = new jsPDF({
+                    orientation: imgHeight > imgWidth ? 'portrait' : 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+                const pageHeight = 297;
+                
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                const employeeName = document.getElementById('employeeName').value || 'Employee';
+                const reviewDate = document.getElementById('reviewDate').value || new Date().toISOString().split('T')[0];
+                const filename = `MCT_Performance_Review_${employeeName.replace(/\s+/g, '_')}_${reviewDate}.pdf`;
+                
+                pdf.save(filename);
+                
+                showMessage('success', '✅ PDF downloaded successfully! Check your Downloads folder.');
+                
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                showMessage('error', '⚠️ Error generating PDF. Please try again or contact support.');
+            }
+        }
+
+        function showMessage(type, message) {
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('loadingMsg').style.display = 'none';
+
+            if (type === 'success') {
+                document.getElementById('successMsg').innerHTML = message;
+                document.getElementById('successMsg').style.display = 'block';
+            } else if (type === 'error') {
+                document.getElementById('errorMsg').innerHTML = message;
+                document.getElementById('errorMsg').style.display = 'block';
+            } else if (type === 'loading') {
+                document.getElementById('loadingMsg').innerHTML = message;
+                document.getElementById('loadingMsg').style.display = 'block';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
