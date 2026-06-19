@@ -4,243 +4,264 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fevereiro Roxo</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    background: #1a1a2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: sans-serif;
-  }
+body {
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Arial Black', 'Impact', Arial, sans-serif;
+}
 
-  .stage {
-    width: 390px;
-    height: 690px;
-    background: #F0EFF6;
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-  }
+.stage {
+  width: 390px;
+  height: 690px;
+  background: #F0EFF6;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+}
 
-  /* ── Decorative SVG ribbons ── */
-  .ribbons {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
+/* ── Keyframes ── */
 
-  /* ── Text block ── */
-  .text-block {
-    position: absolute;
-    top: 120px;
-    left: 52px;
-  }
+@keyframes fadeSlideLeft {
+  from { opacity:0; transform: translateX(-50px); }
+  to   { opacity:1; transform: translateX(0); }
+}
 
-  .line-feve {
-    font-size: 72px;
-    font-weight: 700;
-    color: #9B8EC4;
-    letter-spacing: -2px;
-    line-height: 1;
-    opacity: 0;
-    transform: translateX(-60px);
-  }
+@keyframes popScale {
+  0%   { opacity:0; transform: scale(0.5); }
+  70%  { opacity:1; transform: scale(1.08); }
+  100% { opacity:1; transform: scale(1); }
+}
 
-  .line-reiro {
-    font-size: 72px;
-    font-weight: 700;
-    color: #8B7BBB;
-    letter-spacing: -2px;
-    line-height: 1;
-    opacity: 0;
-    transform: translateX(-60px);
-  }
+@keyframes bounceUp {
+  0%   { opacity:0; transform: translateY(35px); }
+  60%  { opacity:1; transform: translateY(-8px); }
+  80%  { transform: translateY(4px); }
+  100% { opacity:1; transform: translateY(0); }
+}
 
-  .line-roxo {
-    font-size: 80px;
-    font-weight: 900;
-    color: #3D2CB5;
-    letter-spacing: -3px;
-    line-height: 1;
-    opacity: 0;
-    transform: scale(0.6);
-    transform-origin: left center;
-  }
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
 
-  /* Cursive scribble SVG overlay */
-  .scribble-wrap {
-    position: absolute;
-    top: 182px;
-    left: 30px;
-    width: 320px;
-    height: 60px;
-    pointer-events: none;
-  }
+@keyframes strokeDraw {
+  from { stroke-dashoffset: var(--len); }
+  to   { stroke-dashoffset: 0; }
+}
 
-  .scribble-wrap svg {
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
 
-  .scribble-path {
-    stroke: #3D2CB5;
-    stroke-width: 2.8;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 600;
-    stroke-dashoffset: 600;
-  }
+@keyframes arrowSlide {
+  from { opacity:0; transform: scaleX(0); transform-origin: left center; }
+  to   { opacity:1; transform: scaleX(1); transform-origin: left center; }
+}
 
-  /* ── Icons ── */
-  .icons-row {
-    position: absolute;
-    top: 406px;
-    left: 52px;
-    display: flex;
-    gap: 14px;
-  }
+/* ── SVG ribbon layers ── */
+.ribbons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 
-  .icon-circle {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 2px solid #5A4B9E;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: translateY(30px);
-  }
+.rib-top {
+  --len: 750;
+  stroke-dasharray: 750;
+  stroke-dashoffset: 750;
+  animation: strokeDraw 1.4s cubic-bezier(.4,0,.2,1) 0.1s forwards;
+  transform-origin: 370px 90px;
+}
+.rib-top-breathe {
+  animation: strokeDraw 1.4s cubic-bezier(.4,0,.2,1) 0.1s forwards,
+             breathe 3s ease-in-out 2s infinite;
+  transform-origin: 370px 90px;
+}
 
-  .icon-circle svg {
-    width: 34px;
-    height: 34px;
-    stroke: #5A4B9E;
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+.rib-mid {
+  --len: 520;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: strokeDraw 1.6s cubic-bezier(.4,0,.2,1) 0.4s forwards;
+}
 
-  /* ── Body text ── */
-  .body-text {
-    position: absolute;
-    top: 492px;
-    left: 52px;
-    width: 220px;
-    font-size: 14.5px;
-    line-height: 1.55;
-    color: #4A3F7A;
-    opacity: 0;
-  }
+.rib-bot {
+  --len: 320;
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: strokeDraw 1.2s cubic-bezier(.4,0,.2,1) 0.7s forwards;
+}
 
-  .body-text strong {
-    font-weight: 700;
-    color: #2D1E8E;
-  }
+/* ── Typography ── */
+.text-block {
+  position: absolute;
+  top: 115px;
+  left: 48px;
+}
 
-  /* ── Arrow ── */
-  .arrow-wrap {
-    position: absolute;
-    top: 576px;
-    left: 52px;
-  }
+.line-feve {
+  font-size: 74px;
+  font-weight: 900;
+  color: #9B8EC4;
+  letter-spacing: -2px;
+  line-height: 1;
+  opacity: 0;
+  animation: fadeSlideLeft 0.65s cubic-bezier(.22,1,.36,1) 0.5s forwards;
+}
 
-  .arrow-wrap svg {
-    overflow: visible;
-  }
+.line-reiro {
+  font-size: 74px;
+  font-weight: 900;
+  color: #8B7BBB;
+  letter-spacing: -2px;
+  line-height: 1;
+  opacity: 0;
+  animation: fadeSlideLeft 0.65s cubic-bezier(.22,1,.36,1) 0.82s forwards;
+}
 
-  .arrow-line {
-    stroke: #3D2CB5;
-    stroke-width: 2;
-    fill: none;
-    stroke-dasharray: 120;
-    stroke-dashoffset: 120;
-  }
+.line-roxo {
+  font-size: 82px;
+  font-weight: 900;
+  color: #3D2CB5;
+  letter-spacing: -3px;
+  line-height: 1;
+  opacity: 0;
+  animation: popScale 0.55s cubic-bezier(.34,1.56,.64,1) 1.7s forwards;
+}
 
-  .arrow-head {
-    stroke: #3D2CB5;
-    stroke-width: 2;
-    fill: none;
-    stroke-dasharray: 30;
-    stroke-dashoffset: 30;
-  }
+/* Cursive scribble */
+.scribble-wrap {
+  position: absolute;
+  top: 189px;
+  left: 28px;
+  width: 330px;
+  height: 60px;
+  pointer-events: none;
+}
 
-  /* ── Footer ── */
-  .footer {
-    position: absolute;
-    bottom: 48px;
-    left: 52px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-  }
+.scribble-path {
+  --len: 620;
+  stroke-dasharray: 620;
+  stroke-dashoffset: 620;
+  animation: strokeDraw 0.9s cubic-bezier(.4,0,.2,1) 1.1s forwards;
+}
 
-  .footer-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #4B2FD5;
-    flex-shrink: 0;
-  }
+/* ── Icons ── */
+.icons-row {
+  position: absolute;
+  top: 408px;
+  left: 48px;
+  display: flex;
+  gap: 14px;
+}
 
-  .footer-text {
-    font-size: 14px;
-    color: #4A3F7A;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
+.icon-circle {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 2px solid #5A4B9E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
 
-  /* replay button */
-  .replay-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #4B2FD5;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 40px;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.2s;
-  }
-  .replay-btn:hover { transform: scale(1.05); }
+.ic1 { animation: bounceUp 0.55s ease-out 2.2s forwards; }
+.ic2 { animation: bounceUp 0.55s ease-out 2.4s forwards; }
+.ic3 { animation: bounceUp 0.55s ease-out 2.6s forwards; }
+
+.icon-circle svg {
+  width: 36px;
+  height: 36px;
+  stroke: #5A4B9E;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Body text ── */
+.body-text {
+  position: absolute;
+  top: 496px;
+  left: 48px;
+  width: 220px;
+  font-size: 14.5px;
+  font-family: Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #4A3F7A;
+  opacity: 0;
+  animation: fadeIn 0.7s ease-out 2.85s forwards;
+}
+
+.body-text strong {
+  font-weight: 700;
+  color: #2D1E8E;
+}
+
+/* ── Arrow ── */
+.arrow-wrap {
+  position: absolute;
+  top: 580px;
+  left: 48px;
+  opacity: 0;
+  animation: arrowSlide 0.5s ease-out 3.3s forwards;
+}
+
+/* ── Footer ── */
+.footer {
+  position: absolute;
+  bottom: 52px;
+  left: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out 3.8s forwards;
+}
+
+.footer-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4B2FD5;
+  flex-shrink: 0;
+}
+
+.footer-text {
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  color: #4A3F7A;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
 </style>
 </head>
 <body>
-
 <div class="stage">
 
   <!-- Decorative ribbons -->
   <div class="ribbons">
     <svg viewBox="0 0 390 690" width="390" height="690" xmlns="http://www.w3.org/2000/svg">
-      <!-- Top-right open circle -->
       <circle class="rib-top" cx="370" cy="90" r="110"
-        fill="none" stroke="#A89ED0" stroke-width="38" opacity="0"
-        stroke-dasharray="690" stroke-dashoffset="690"/>
+        fill="none" stroke="#A89ED0" stroke-width="38" opacity="0.75"/>
 
-      <!-- Mid-right awareness ribbon shape -->
-      <path class="rib-mid" d="M430,340 C380,290 300,320 330,400 C360,480 440,470 410,540 C380,610 290,600 300,660"
-        fill="none" stroke="#6B5CE7" stroke-width="46" stroke-linecap="round" opacity="0"
-        stroke-dasharray="500" stroke-dashoffset="500"/>
+      <path class="rib-mid"
+        d="M430,340 C390,290 310,325 338,405 C366,485 448,472 415,542 C382,612 294,600 300,655"
+        fill="none" stroke="#7B6CE8" stroke-width="46" stroke-linecap="round" opacity="0.85"/>
 
-      <!-- Bottom curl -->
-      <path class="rib-bot" d="M320,620 C390,600 430,660 380,700 C340,730 270,710 280,680"
-        fill="none" stroke="#A89ED0" stroke-width="36" stroke-linecap="round" opacity="0"
-        stroke-dasharray="300" stroke-dashoffset="300"/>
+      <path class="rib-bot"
+        d="M320,615 C392,600 432,658 384,700 C345,732 272,712 282,680"
+        fill="none" stroke="#A89ED0" stroke-width="36" stroke-linecap="round" opacity="0.65"/>
     </svg>
   </div>
 
@@ -251,66 +272,68 @@
     <div class="line-roxo">roxo</div>
   </div>
 
-  <!-- Cursive scribble across "reiro" -->
+  <!-- Cursive scribble over "reiro" -->
   <div class="scribble-wrap">
-    <svg viewBox="0 0 320 60" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 330 60" xmlns="http://www.w3.org/2000/svg" overflow="visible">
       <path class="scribble-path"
-        d="M10,38 C30,20 60,50 90,32 C120,14 140,48 170,30 C200,12 230,46 260,28 C280,18 305,42 320,30"/>
+        stroke="#3D2CB5" stroke-width="2.8" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"
+        d="M6,38 C22,18 52,52 84,30 C116,8 142,50 178,28 C214,6 242,46 272,26 C292,14 312,42 330,28"/>
     </svg>
   </div>
 
-  <!-- Icons row -->
+  <!-- Icons -->
   <div class="icons-row">
-    <!-- Brain / Alzheimer -->
-    <div class="icon-circle" id="ic1">
-      <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13,8 C9,8 6,11 6,15 C6,17 7,18.5 8.5,19.5 C7,20 6,21.5 6,23 C6,26 8.5,28 11.5,28 L24.5,28 C27.5,28 30,26 30,23 C30,21.5 29,20 27.5,19.5 C29,18.5 30,17 30,15 C30,11 27,8 23,8 C22,8 21,8.3 20.2,8.7 C19.5,7.1 18,6 16,6 C14.4,6 13.1,6.8 12.3,8 Z"/>
-        <line x1="18" y1="8" x2="18" y2="28"/>
-        <path d="M12,14 C12,14 14,16 18,15"/>
-        <path d="M24,14 C24,14 22,16 18,15"/>
-        <text x="8" y="7" font-size="6" fill="#5A4B9E" stroke="none" font-family="sans-serif">?</text>
-        <text x="22" y="7" font-size="6" fill="#5A4B9E" stroke="none" font-family="sans-serif">?</text>
+    <!-- Brain (Alzheimer) -->
+    <div class="icon-circle ic1">
+      <svg viewBox="0 0 36 36">
+        <path d="M18,7 C14,7 11,10 11,14 C11,15.5 11.5,16.8 12.5,17.8 C11.2,18.5 10,20 10,22 C10,25 12.5,27 15.5,27 L20.5,27 C23.5,27 26,25 26,22 C26,20 24.8,18.5 23.5,17.8 C24.5,16.8 25,15.5 25,14 C25,10 22,7 18,7Z"/>
+        <line x1="18" y1="8" x2="18" y2="26"/>
+        <path d="M13,15 Q15.5,17 18,16"/>
+        <path d="M23,15 Q20.5,17 18,16"/>
+        <text x="7" y="9" font-size="5.5" fill="#5A4B9E" stroke="none" font-family="Arial">??</text>
       </svg>
     </div>
-    <!-- Spine / Fibromialgia -->
-    <div class="icon-circle" id="ic2">
-      <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <!-- Spine (Fibromialgia) -->
+    <div class="icon-circle ic2">
+      <svg viewBox="0 0 36 36">
         <line x1="18" y1="5" x2="18" y2="31"/>
-        <rect x="13" y="8" width="10" height="5" rx="2"/>
-        <rect x="13" y="15" width="10" height="5" rx="2"/>
-        <rect x="13" y="22" width="10" height="5" rx="2"/>
-        <line x1="10" y1="10.5" x2="13" y2="10.5"/>
-        <line x1="23" y1="10.5" x2="26" y2="10.5"/>
-        <line x1="10" y1="17.5" x2="13" y2="17.5"/>
-        <line x1="23" y1="17.5" x2="26" y2="17.5"/>
-        <line x1="10" y1="24.5" x2="13" y2="24.5"/>
-        <line x1="23" y1="24.5" x2="26" y2="24.5"/>
+        <rect x="13" y="7"  width="10" height="5" rx="2.5"/>
+        <rect x="13" y="14" width="10" height="5" rx="2.5"/>
+        <rect x="13" y="21" width="10" height="5" rx="2.5"/>
+        <line x1="9"  y1="9.5"  x2="13" y2="9.5"/>
+        <line x1="23" y1="9.5"  x2="27" y2="9.5"/>
+        <line x1="9"  y1="16.5" x2="13" y2="16.5"/>
+        <line x1="23" y1="16.5" x2="27" y2="16.5"/>
+        <line x1="9"  y1="23.5" x2="13" y2="23.5"/>
+        <line x1="23" y1="23.5" x2="27" y2="23.5"/>
       </svg>
     </div>
-    <!-- Face / Lúpus -->
-    <div class="icon-circle" id="ic3">
-      <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <!-- Face (Lúpus) -->
+    <div class="icon-circle ic3">
+      <svg viewBox="0 0 36 36">
         <circle cx="18" cy="16" r="10"/>
-        <circle cx="14" cy="14" r="1.5" fill="#5A4B9E"/>
-        <circle cx="22" cy="14" r="1.5" fill="#5A4B9E"/>
-        <path d="M13,20 Q18,24 23,20"/>
-        <!-- butterfly rash across nose -->
-        <path d="M12,16 C13,14 15,15 18,16 C21,15 23,14 24,16 C23,18 21,17 18,16 C15,17 13,18 12,16Z"
-          fill="#C084FC" stroke="none" opacity="0.5"/>
+        <circle cx="14" cy="14" r="1.5" fill="#5A4B9E" stroke="none"/>
+        <circle cx="22" cy="14" r="1.5" fill="#5A4B9E" stroke="none"/>
+        <path d="M13,21 Q18,25 23,21"/>
+        <!-- butterfly rash -->
+        <path d="M11,16.5 C13,13.5 16,15 18,16 C20,15 23,13.5 25,16.5 C23,19 20,17.5 18,16 C16,17.5 13,19 11,16.5Z"
+          fill="#C084FC" stroke="none" opacity="0.45"/>
       </svg>
     </div>
   </div>
 
   <!-- Body text -->
   <div class="body-text">
-    Mês de conscientização sobre <strong>Alzheimer, fibromialgia e lúpus.</strong>
+    Mês de conscientização<br>sobre <strong>Alzheimer,<br>fibromialgia e lúpus.</strong>
   </div>
 
   <!-- Arrow -->
   <div class="arrow-wrap">
-    <svg width="110" height="20" viewBox="0 0 110 20">
-      <line class="arrow-line" x1="0" y1="10" x2="96" y2="10"/>
-      <polyline class="arrow-head" points="84,3 97,10 84,17"/>
+    <svg width="100" height="20" viewBox="0 0 100 20">
+      <line x1="0" y1="10" x2="86" y2="10" stroke="#3D2CB5" stroke-width="2"/>
+      <polyline points="76,3 89,10 76,17" stroke="#3D2CB5" stroke-width="2" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
@@ -321,83 +344,5 @@
   </div>
 
 </div>
-
-<button class="replay-btn" id="replayBtn">↺ Replay</button>
-
-<script>
-const qs = (s) => document.querySelector(s);
-const qsa = (s) => document.querySelectorAll(s);
-
-function runAnimation() {
-  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-  /* ─ 0. Reset everything ─ */
-  gsap.set(".rib-top, .rib-mid, .rib-bot", { opacity: 0, strokeDashoffset: (i, el) => el.getTotalLength?.() || parseFloat(el.getAttribute("stroke-dasharray")) });
-  gsap.set(".line-feve, .line-reiro", { opacity: 0, x: -60 });
-  gsap.set(".line-roxo", { opacity: 0, scale: 0.6 });
-  gsap.set(".scribble-path", { strokeDashoffset: 600 });
-  gsap.set(".icon-circle", { opacity: 0, y: 30 });
-  gsap.set(".body-text", { opacity: 0 });
-  gsap.set(".arrow-line", { strokeDashoffset: 120 });
-  gsap.set(".arrow-head", { strokeDashoffset: 30 });
-  gsap.set(".footer", { opacity: 0 });
-
-  /* ─ 1. Background ribbons draw in ─ */
-  tl.to(".rib-top",  { strokeDashoffset: 0, opacity: 0.7, duration: 1.4, ease: "power2.inOut" }, 0)
-    .to(".rib-mid",  { strokeDashoffset: 0, opacity: 0.85, duration: 1.6, ease: "power2.inOut" }, 0.3)
-    .to(".rib-bot",  { strokeDashoffset: 0, opacity: 0.6, duration: 1.2, ease: "power2.inOut" }, 0.6);
-
-  /* ─ 2. "feve" slides in ─ */
-  tl.to(".line-feve", { x: 0, opacity: 1, duration: 0.65 }, 0.5);
-
-  /* ─ 3. "reiro" slides in ─ */
-  tl.to(".line-reiro", { x: 0, opacity: 1, duration: 0.65 }, 0.78);
-
-  /* ─ 4. Scribble draws across ─ */
-  tl.to(".scribble-path", { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 1.05);
-
-  /* ─ 5. "roxo" pops in ─ */
-  tl.to(".line-roxo", {
-    scale: 1, opacity: 1, duration: 0.55,
-    ease: "back.out(1.8)",
-    transformOrigin: "left center"
-  }, 1.55);
-
-  /* ─ 6. Icons bounce in one by one ─ */
-  tl.to("#ic1", { y: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 2.1);
-  tl.to("#ic2", { y: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 2.28);
-  tl.to("#ic3", { y: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 2.46);
-
-  /* ─ 7. Body text fades in ─ */
-  tl.to(".body-text", { opacity: 1, duration: 0.6, y: -8, ease: "power2.out" }, 2.7)
-    .from(".body-text", { y: 8, duration: 0.6 }, 2.7);
-
-  /* ─ 8. Arrow draws ─ */
-  tl.to(".arrow-line", { strokeDashoffset: 0, duration: 0.55 }, 3.2);
-  tl.to(".arrow-head", { strokeDashoffset: 0, duration: 0.3 }, 3.68);
-
-  /* ─ 9. Footer fades in ─ */
-  tl.to(".footer", { opacity: 1, duration: 0.5 }, 3.85);
-
-  /* ─ 10. Continuous ribbon breathe ─ */
-  tl.add(() => {
-    gsap.to(".rib-top", { scale: 1.04, transformOrigin: "370px 90px", duration: 2.8, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    gsap.to(".rib-mid", { scaleX: 1.03, transformOrigin: "430px 490px", duration: 3.2, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 0.4 });
-  }, 2.2);
-
-  /* show replay button */
-  tl.add(() => {
-    gsap.to("#replayBtn", { opacity: 1, duration: 0.4 });
-  }, 4.5);
-
-  return tl;
-}
-
-runAnimation();
-
-document.getElementById("replayBtn").addEventListener("click", () => {
-  gsap.to("#replayBtn", { opacity: 0, duration: 0.2, onComplete: runAnimation });
-});
-</script>
 </body>
 </html>
